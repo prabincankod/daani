@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model Mandir {
+    id             String  @id @default(cuid())
+    name           String
+    slug           String  @unique
+    name_in_native String?
+
+    // relations
+    images   Image[]
+    packages PaymentPackage[]
+    config   MandirConfig?
+}
+
+model MandirConfig {
+    id String @id @default(cuid())
+
+    primaryColor     String? @default("#fffff")
+    secondaryColor   String? @default("#fffff")
+    primaryHeadLineText String? @default("Welcom to Nepotism")
+    secondaryHeadLineText String? @default("Crafting great software expreiences")
+    ctaBtnText       String? @default("Contact Us")
+
+    // relations
+    mandir   Mandir? @relation(fields: [mandirId], references: [id])
+    mandirId String? @unique
+}
+
+model PaymentPackage {
+    id      String  @id @default(cuid())
+    name    String
+    details String?
+    price   String
+
+    // relations
+    Mandir   Mandir? @relation(fields: [mandirId], references: [id])
+    mandirId String?
+}
+
+model PaymentInit {
+    id       String @id @default(cuid())
+    username String
+}
+
+model Image {
+    id   String  @id @default(cuid())
+    url  String
+    name String?
+
+    // relations
+    Mandir   Mandir? @relation(fields: [mandirId], references: [id])
+    mandirId String?
+}
